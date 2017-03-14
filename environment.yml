@@ -5,4 +5,5 @@ dependencies:
 - numpy
 - matplotlib
 - scipy
+- widgetsnbextension
 - ipywidgets
