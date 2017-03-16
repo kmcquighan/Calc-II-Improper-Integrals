@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Copyright Kelly McQuighan 2016
+Kelly McQuighan 2016
 
 These tools can be used to visualize different improper integrals.
 """
@@ -13,6 +13,11 @@ import matplotlib as mpl
 mpl.rcParams['font.size'] = 17
 import scipy.interpolate as interp
 
+"""
+This function is used to make the plot of what the approximation of the integral
+looks like for five different numerical methods: Left Riemann sum, Right Riemann sum,
+Midpoint rule, Trapezoid rule, and Simpson's rule.
+"""
 def plots(func, a,b,n,method,ax):
     
     ax.axvline(0.,color='#666666',linewidth=1)
@@ -81,7 +86,11 @@ def plots(func, a,b,n,method,ax):
         ax.set_ylim([1.1*smallest, 1.1*largest])
     ax.set_xlabel('x')
     ax.set_ylabel('f(x)')
-    
+
+"""
+This function approximates the integral using one of five possible numerical methods:
+Left Riemann sum, Right Riemann sum, Midpoint Rule, Trapezoid Rule, and Simpson's Rule.
+"""    
 def evalArea(func,a,b,n, method):
     
     dx = (b-a)/n
@@ -113,15 +122,17 @@ def evalArea(func,a,b,n, method):
     
     return area
 
+"""
+This function calls plots() and evalArea() in order to compute the approximation of the
+integral using a left Riemann sum. The running approximation is shown as n gets larger
+"""
 def plotIntegralApprox(f,a,b,n):
     
-    a = float(a)
-    b = float(b)
-    assert (a<=b) # "ERROR! a must be less than b!"
+    a = eval(a)
+    b = eval(b)
     nmax = 100
 
     func = eval("lambda x: " + f)
-    #I = inte.quad(func, a, b)[0]
         
     fig = plt.figure(figsize=(20, 6))
        
@@ -149,7 +160,6 @@ def plotIntegralApprox(f,a,b,n):
     else:
         ax2.set_ylim([1.05*min(I),1.05*max(I)])
    
-    #ax1.axhline(0.,linewidth=1,color='k')
     ax2.axhline(0.,linewidth=1,color='k')
     
     ax1.set_xlabel('x', fontsize=36)
@@ -161,11 +171,14 @@ def plotIntegralApprox(f,a,b,n):
     plt.suptitle('f(x) = '+f+ ' for $x\in$ [%.0f, %.0f]' %(a,b), fontsize=36, y=1.1)
     mpl.rc('xtick', labelsize=20) 
     mpl.rc('ytick', labelsize=20)
-    
+
+"""
+This function helps visualize how improper integrals with infinite intervals can 
+be computed using limits.
+"""    
 def plotINFInterval(f,a,b):
     
-    a = float(a)
-    assert (a<=b) # "ERROR! a must be less than b!"
+    a = eval(a)
     amin = 0.2
     bmax = 100
 
@@ -184,7 +197,6 @@ def plotINFInterval(f,a,b):
     ax1.set_xlim([0,1.03*bmax])
     ax2.set_xlim([0,1.03*bmax])
     
-    #dx = (bmax-a)/1000.
     idx = np.where(x>=b)[0][0]
     
     ax1.plot(x_all,y_all,'b',linewidth=5)
@@ -219,13 +231,17 @@ def plotINFInterval(f,a,b):
     ax2.set_title(r'$\int_a^b f(x)dx$',fontsize=36, y=1.1)
     
     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
-    plt.suptitle('f(x) = '+f+ ' for $x\in$ [%.0f, %.0f]' %(a,b), fontsize=36, y=1.1)
+    plt.suptitle('f(x) = '+f+ ' for $x\in$ [%.2f, %.2f]' %(a,b), fontsize=36, y=1.1)
     mpl.rc('xtick', labelsize=20) 
     mpl.rc('ytick', labelsize=20)
 
+"""
+This function helps visualize how improper integrals with infinite integrands can
+be computed with limits.
+"""
 def plotINFIntegrand(g,m,b):
     
-    b = float(b)
+    b = eval(b)
     a = 10**m
     mmin = -6
     
