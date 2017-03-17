@@ -5,3 +5,4 @@ You can either download the files and run the Notebook on your local machine or 
 
 [![Binder](http://mybinder.org/badge.svg)](http://mybinder.org:/repo/kmcquighan/calc-ii-improper-integrals)
 
+If you download the files to your computer make sure that you have the ImpropIntTools.py file: these are the backend functions that create the simulations in the notebook.
