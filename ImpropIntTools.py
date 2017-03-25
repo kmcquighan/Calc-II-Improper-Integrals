@@ -278,14 +278,14 @@ def plotINFIntegrand(g,m,b):
     ax3 = fig.add_subplot(2,2,4)
     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     
-    x = np.logspace(mmin,np.log10(b),1000)
+    x = np.logspace(mmin,np.log10(b),1000)    
+    [I,idxa,idxb] = compute_and_plot_integral(g,a,b,0.05,bmax,x,ax1,True)
+    
     ax2.set_xlim([-0.01,bmax])
     ax3.set_xlim([1.01*mmin,np.log10(1.2*b)])
     
-    [I,idxa,idxb] = compute_and_plot_integral(g,a,b,0.05,bmax,x,ax1,True)
     ax2.plot(x[idxa:],I[idxa:],'r',linewidth=5)
     ax2.plot(x[idxa], I[idxa],'go', markersize=13)
-    
     ax3.plot(np.log10(x[idxa:]),I[idxa:],'r',linewidth=5)
     ax3.plot(np.log10(x[idxa]), I[idxa],'go', markersize=13)
 
