@@ -13,6 +13,14 @@ import matplotlib as mpl
 mpl.rcParams['font.size'] = 17
 import scipy.interpolate as interp
 
+""" 
+NOTE: These next two functions are copied directly out of areaTools.py. One could
+delete these functions and instead just import areaTools. I decided to implement
+these tools by copying the relevant code so that each module could stand alone,
+but if you want to use all of these tools and modify them I recommend that you 
+instead import areaTools.
+"""
+
 """
 This function is used to make the plot of what the approximation of the integral
 looks like for five different numerical methods: Left Riemann sum, Right Riemann sum,
@@ -172,6 +180,42 @@ def plotIntegralApprox(f,a,b,n):
     mpl.rc('xtick', labelsize=20) 
     mpl.rc('ytick', labelsize=20)
 
+def compute_and_plot_integral(f,a,b,amin,bmax,x,ax,change_a):
+    func = eval("lambda x: " + f)
+    
+    #x = np.logspace(mmin,np.log10(b),1000)
+    #x = np.linspace(a,bmax,1000)
+    x_all = np.linspace(amin,1.03*bmax,1000)
+    y = func(x)
+    y_all = func(x_all)
+    
+    idxa = np.where(x>=a)[0][0]
+    idxb = np.where(x>=b)[0][0]
+        
+    ax.plot(x_all,y_all,'b',linewidth=5)
+    ax.fill_between(x[idxa:idxb],y[idxa:idxb], facecolor='g', edgecolor='g', alpha=0.3, linewidth=3)
+        
+    if (min(y_all)>0.):
+        ax.set_ylim([0,max(y_all)])
+    elif (max(y_all)<0.):
+        ax.set_ylim([min(y_all),0.])
+    else:
+        ax.set_ylim([min(y_all),max(y_all)])
+    
+    I = np.zeros(1000)
+    if (change_a):
+        for i in range(1000):
+            I[i] = inte.quad(func,x[i],b)[0]
+    else:
+        for i in range(1000):
+            I[i] = inte.quad(func,a,x[i])[0]
+        
+    ax.set_xlim([0,1.03*bmax])
+    ax.set_xlabel('x', fontsize=36)
+    ax.set_title('f(x)', fontsize=36)
+    ax.axhline(0.,linewidth=1,color='k')
+        
+    return [I,idxa,idxb]
 """
 This function helps visualize how improper integrals with infinite intervals can 
 be computed using limits.
@@ -181,39 +225,19 @@ def plotINFInterval(f,a,b):
     a = eval(a)
     amin = 0.2
     bmax = 100
-
-    func = eval("lambda x: " + f)
-        
+    x = np.linspace(a,bmax,1000)
+    
     fig = plt.figure(figsize=(20, 6))
-       
     ax1 = fig.add_subplot(1,2,1)
     ax2 = fig.add_subplot(1,2,2)
     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     
-    x = np.linspace(a,bmax,1000)
-    x_all = np.linspace(amin,1.03*bmax,1000)
-    y = func(x)
-    y_all = func(x_all)
-    ax1.set_xlim([0,1.03*bmax])
+    [I,idxa,idxb] = compute_and_plot_integral(f,a,b,amin,bmax,x,ax1,False) 
+        
     ax2.set_xlim([0,1.03*bmax])
-    
-    idx = np.where(x>=b)[0][0]
-    
-    ax1.plot(x_all,y_all,'b',linewidth=5)
-    ax1.fill_between(x[:idx+1],y[:idx+1], facecolor='g', edgecolor='g', alpha=0.3, linewidth=3)
-    
-    if (min(y_all)>0.):
-        ax1.set_ylim([0,1.03*max(y_all)])
-    elif (max(y_all)<0.):
-        ax1.set_ylim([1.03*min(y_all),0.])
-    else:
-        ax1.set_ylim([1.03*min(y_all),1.03*max(y_all)])
-    
-    I = np.zeros(1000)
-    for i in range(1000):
-        I[i] = inte.quad(func,a,x[i])[0]
-    ax2.plot(x[:idx],I[:idx],'r',linewidth=5)
-    ax2.plot(x[idx], I[idx],'go', markersize=13)
+        
+    ax2.plot(x[:idxb],I[:idxb],'r',linewidth=5)
+    ax2.plot(x[idxb], I[idxb],'go', markersize=13)
     
     if (min(I)==0.):
         ax2.set_ylim([0.,1.03*max(I)])
@@ -222,11 +246,8 @@ def plotINFInterval(f,a,b):
     else:
         ax2.set_ylim([1.03*min(I),1.03*max(I)])
    
-    ax1.axhline(0.,linewidth=1,color='k')
     ax2.axhline(0.,linewidth=1,color='k')
     
-    ax1.set_xlabel('x', fontsize=36)
-    ax1.set_title('f(x)', fontsize=36)
     ax2.set_xlabel('b', fontsize=36)
     ax2.set_title(r'$\int_a^b f(x)dx$',fontsize=36, y=1.1)
     
@@ -243,10 +264,9 @@ def plotINFIntegrand(g,m,b):
     
     b = eval(b)
     a = 10**m
+    bmax = 1.03*b
     mmin = -6
     
-    func = eval("lambda x: " + g)
-        
     fig = plt.figure(figsize=(20, 12))
        
     ax1 = fig.add_subplot(1,2,1)
@@ -254,34 +274,16 @@ def plotINFIntegrand(g,m,b):
     ax3 = fig.add_subplot(2,2,4)
     plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
     
-    #x = np.linspace(amin,b,1000)
     x = np.logspace(mmin,np.log10(b),1000)
-    x_all = np.linspace(0.05,1.03*b,1000)
-    y = func(x)
-    y_all = func(x_all)
-    ax1.set_xlim([0,1.03*b])
-    ax2.set_xlim([-0.01,1.03*b])
+    ax2.set_xlim([-0.01,bmax])
     ax3.set_xlim([1.01*mmin,np.log10(1.2*b)])
     
-    idx = np.where(x>=a)[0][0]
+    [I,idxa,idxb] = compute_and_plot_integral(g,a,b,0.05,bmax,x,ax1,True)
+    ax2.plot(x[idxa:],I[idxa:],'r',linewidth=5)
+    ax2.plot(x[idxa], I[idxa],'go', markersize=13)
     
-    ax1.plot(x_all,y_all,'b',linewidth=5)
-    ax1.fill_between(x[idx:],y[idx:], facecolor='g', edgecolor='g', alpha=0.3, linewidth=3)
-    if (min(y_all)>0.):
-        ax1.set_ylim([0,max(y_all)])
-    elif (max(y_all)<0.):
-        ax1.set_ylim([min(y_all),0.])
-    else:
-        ax1.set_ylim([min(y_all),max(y_all)])
-    
-    I = np.zeros(1000)
-    for i in range(1000):
-        I[i] = inte.quad(func,x[i],b)[0]
-    ax2.plot(x[idx:],I[idx:],'r',linewidth=5)
-    ax2.plot(x[idx], I[idx],'go', markersize=13)
-    
-    ax3.plot(np.log10(x[idx:]),I[idx:],'r',linewidth=5)
-    ax3.plot(np.log10(x[idx]), I[idx],'go', markersize=13)
+    ax3.plot(np.log10(x[idxa:]),I[idxa:],'r',linewidth=5)
+    ax3.plot(np.log10(x[idxa]), I[idxa],'go', markersize=13)
 
     if (min(I)==0.):
         ax2.set_ylim([0.,1.03*max(I)])
@@ -293,12 +295,9 @@ def plotINFIntegrand(g,m,b):
         ax2.set_ylim([1.03*min(I),1.03*max(I)])
         ax3.set_ylim([1.03*min(I),1.03*max(I)])
 
-    ax1.axhline(0.,linewidth=1,color='k')
     ax2.axhline(0.,linewidth=1,color='k')
     ax3.axhline(0.,linewidth=1,color='k')
 
-    ax1.set_xlabel('x', fontsize=36)
-    ax1.set_title('g(x)', fontsize=36)
     ax2.set_xlabel(r'$a$', fontsize=36)
     ax2.set_title(r'$\int_a^b g(x)dx$',fontsize=36, y=1.1)
     ax3.set_xlabel(r'$\log_{10}(a)$', fontsize=36)
