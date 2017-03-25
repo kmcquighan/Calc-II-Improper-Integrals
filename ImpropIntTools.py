@@ -180,11 +180,15 @@ def plotIntegralApprox(f,a,b,n):
     mpl.rc('xtick', labelsize=20) 
     mpl.rc('ytick', labelsize=20)
 
+"""
+A helper function that plots the function and the area on axis1. This is the same
+for both the infinite interval and infinite integrand cases. This function
+returns the area computed; however, the way the area is computed is determined
+by whether we change a or change b (indicated by the flag change_a)
+"""
 def compute_and_plot_integral(f,a,b,amin,bmax,x,ax,change_a):
     func = eval("lambda x: " + f)
-    
-    #x = np.logspace(mmin,np.log10(b),1000)
-    #x = np.linspace(a,bmax,1000)
+   
     x_all = np.linspace(amin,1.03*bmax,1000)
     y = func(x)
     y_all = func(x_all)
